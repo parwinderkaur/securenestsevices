@@ -1,130 +1,119 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Send } from "lucide-react"
-import { services } from "@/lib/services"
+import { useState } from "react";
+import { Send } from "lucide-react";
 
 export function QuoteForm() {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [phone, setPhone] = useState("")
-  const [service, setService] = useState("")
-  const [message, setMessage] = useState("")
-
-  const mailtoHref = () => {
-    const subject = `Quote Request${service ? ` - ${service}` : ""}`
-    const body = [
-      `Name: ${name}`,
-      `Email: ${email}`,
-      `Phone: ${phone}`,
-      `Service: ${service}`,
-      "",
-      "Details:",
-      message,
-    ].join("\n")
-    return `mailto:info@securenestservices.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-  }
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    service: "Fire Marshal Services",
+    message: ""
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    window.location.href = mailtoHref()
-  }
+    e.preventDefault();
 
-  const fieldClass =
-    "w-full rounded-lg border border-white/10 bg-[#05070f] px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none transition-colors focus:border-teal-500/60 focus:ring-2 focus:ring-teal-500/20"
+    // Client ka WhatsApp Number
+    const whatsappNumber = "447411523527";
+
+    // Formatted WhatsApp Message
+    const text = `*New Website Enquiry - Secure Nest Services*%0A%0A` +
+      `*Name:* ${formData.name}%0A` +
+      `*Phone:* ${formData.phone}%0A` +
+      `*Email:* ${formData.email}%0A` +
+      `*Service Required:* ${formData.service}%0A` +
+      `*Message:* ${formData.message}`;
+
+    // WhatsApp open karega (New Tab)
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${text}`;
+    window.open(whatsappUrl, "_blank");
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div>
-          <label htmlFor="name" className="mb-2 block text-sm font-medium text-slate-300">
-            Full Name
-          </label>
-          <input
-            id="name"
-            type="text"
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Jane Smith"
-            className={fieldClass}
-          />
-        </div>
-        <div>
-          <label htmlFor="phone" className="mb-2 block text-sm font-medium text-slate-300">
-            Phone
-          </label>
-          <input
-            id="phone"
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="+44 7411 523527"
-            className={fieldClass}
-          />
-        </div>
-      </div>
+    <form onSubmit={handleSubmit} className="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-4 text-slate-900">
+      <h3 className="text-xl font-bold text-slate-900 mb-1">Send an Enquiry via WhatsApp</h3>
+      <p className="text-xs text-slate-500 mb-4">Fill out the details below to message us directly on WhatsApp.</p>
 
       <div>
-        <label htmlFor="email" className="mb-2 block text-sm font-medium text-slate-300">
-          Email
-        </label>
+        <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Full Name *</label>
         <input
-          id="email"
-          type="email"
+          type="text"
           required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="jane@example.com"
-          className={fieldClass}
+          placeholder="e.g. John Smith"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          className="w-full p-3 rounded-lg border border-slate-300 text-slate-900 text-sm focus:border-teal-600 focus:outline-none"
         />
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Phone Number *</label>
+          <input
+            type="tel"
+            required
+            placeholder="+44 7123 456789"
+            value={formData.phone}
+            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            className="w-full p-3 rounded-lg border border-slate-300 text-slate-900 text-sm focus:border-teal-600 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Email Address</label>
+          <input
+            type="email"
+            placeholder="john@example.com"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            className="w-full p-3 rounded-lg border border-slate-300 text-slate-900 text-sm focus:border-teal-600 focus:outline-none"
+          />
+        </div>
+      </div>
+
       <div>
-        <label htmlFor="service" className="mb-2 block text-sm font-medium text-slate-300">
-          Service Required
-        </label>
+        <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Service Required</label>
         <select
-          id="service"
-          value={service}
-          onChange={(e) => setService(e.target.value)}
-          className={fieldClass}
+          value={formData.service}
+          onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+          className="w-full p-3 rounded-lg border border-slate-300 text-slate-900 text-sm focus:border-teal-600 focus:outline-none bg-white"
         >
-          <option value="">Select a service</option>
-          {services.map((s) => (
-            <option key={s.slug} value={s.title}>
-              {s.title}
-            </option>
-          ))}
-          <option value="Other">Other / Not sure</option>
+          <option value="Fire Marshal Services">Fire Marshal Services</option>
+          <option value="Residential Services">Residential Services</option>
+          <option value="Event Security Services">Event Security Services</option>
+          <option value="Retail Security">Retail Security</option>
+          <option value="Manned Guarding Services">Manned Guarding Services</option>
+          <option value="Educational Security">Educational Security</option>
+          <option value="Hotel & Concierge Security">Hotel & Concierge Security</option>
+          <option value="Warehouse Security">Warehouse Security</option>
+          <option value="Corporate Security Services">Corporate Security Services</option>
+          <option value="Construction Site Security">Construction Site Security</option>
         </select>
       </div>
 
       <div>
-        <label htmlFor="message" className="mb-2 block text-sm font-medium text-slate-300">
-          How can we help?
-        </label>
+        <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Message / Requirements</label>
         <textarea
-          id="message"
+          rows={4}
           required
-          rows={5}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Tell us about the site, dates and cover you need..."
-          className={fieldClass}
-        />
+          placeholder="Tell us about your property, dates, or security requirements..."
+          value={formData.message}
+          onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+          className="w-full p-3 rounded-lg border border-slate-300 text-slate-900 text-sm focus:border-teal-600 focus:outline-none"
+        ></textarea>
       </div>
 
       <button
         type="submit"
-        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-teal-600 hover:scale-105 active:scale-95 transition-all duration-300 shadow-md hover:shadow-teal-500/20 px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-teal-900/50 transition-colors hover:bg-teal-500 sm:w-auto"
+        className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold p-3.5 rounded-lg shadow-md hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 text-sm cursor-pointer"
       >
-        <Send className="h-5 w-5" />
-        Send Enquiry
+        <Send className="w-4 h-4" /> Send Enquiry on WhatsApp
       </button>
-      <p className="text-xs text-slate-500">
-        Submitting opens your email client with the details prefilled, ready to send to our team.
-      </p>
     </form>
-  )
+  );
 }
+
+// Named aur Default dono export diye hain taaki kabhi error na aaye
+export default QuoteForm;

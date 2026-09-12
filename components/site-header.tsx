@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Phone, Mail, ChevronDown, Menu, X, ExternalLink, ShieldAlert } from "lucide-react";
+import { Phone, Mail, ChevronDown, Menu, X, ExternalLink, ShieldAlert, ArrowRight, Shield } from "lucide-react";
 
 const services = [
   { name: "Fire Marshal Services", href: "/services/fire-marshal" },
@@ -23,6 +23,8 @@ export function SiteHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
 
+  const isServicesActive = pathname.startsWith("/services");
+
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "About Us", href: "/about" },
@@ -33,11 +35,9 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm" suppressHydrationWarning>
-      {/* 1. SOLID DARK TOP SECTION (With Highlighted Threat & Guidance Link) */}
+      {/* 1. TOP BAR */}
       <div className="bg-slate-950 text-slate-200 text-xs py-2 px-4 md:px-6 border-b border-slate-800">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          
-          {/* Contact Details */}
           <div className="flex items-center gap-4 md:gap-6 text-[11px] sm:text-xs">
             <a href="tel:+447411523527" className="flex items-center gap-1.5 text-slate-200 hover:text-teal-400 font-medium transition">
               <Phone className="w-3.5 h-3.5 text-teal-400" /> +44 7411 523527
@@ -47,30 +47,28 @@ export function SiteHeader() {
             </a>
           </div>
 
-          {/* HIGHLIGHTED THREAT & GUIDANCE (Opens in New Tab) */}
           <a
             href="https://www.mi5.gov.uk/threats-and-advice/terrorism-threat-levels"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 hover:text-amber-200 px-3 py-1 rounded-full text-[11px] font-bold tracking-wide transition-all shadow-sm"
+            className="inline-flex items-center gap-1.5 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 hover:text-amber-200 px-3 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold tracking-wide transition-all shadow-sm"
           >
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            <ShieldAlert className="w-3 h-3 text-amber-400" />
             <span>Threat &amp; Guidance (MI5)</span>
             <ExternalLink className="w-3 h-3 opacity-70" />
           </a>
-
         </div>
       </div>
 
-      {/* 2. Main Navbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 md:h-30 flex justify-between items-center">
+      {/* 2. MAIN NAVBAR */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 md:h-24 flex justify-between items-center">
         {/* Logo */}
         <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center py-1">
           <img 
             src="/logo.png" 
             alt="Secure Nest Logo" 
-            className="h-16 md:h-30 w-auto object-contain hover:scale-105 transition-transform" 
+            className="h-16 md:h-20 w-auto object-contain hover:scale-105 transition-transform" 
           />
         </Link>
 
@@ -95,7 +93,11 @@ export function SiteHeader() {
 
           {/* Services Dropdown */}
           <div className="relative group">
-            <button className="flex items-center gap-1 px-4 py-2 rounded-md font-semibold text-sm text-slate-700 hover:text-teal-600 hover:bg-slate-100 transition">
+            <button className={`flex items-center gap-1 px-4 py-2 rounded-md font-semibold text-sm transition ${
+              isServicesActive 
+                ? "bg-teal-600 text-white shadow-md" 
+                : "text-slate-700 hover:text-teal-600 hover:bg-slate-100"
+            }`}>
               Our Services <ChevronDown className="w-4 h-4 transition-transform group-hover:rotate-180" />
             </button>
             <div className="absolute top-full left-0 hidden group-hover:grid grid-cols-2 gap-1 w-[450px] p-3 bg-white border border-slate-200 rounded-xl shadow-xl z-50">
@@ -103,7 +105,9 @@ export function SiteHeader() {
                 <Link
                   key={s.name}
                   href={s.href}
-                  className="p-2.5 rounded-lg text-xs font-medium text-slate-700 hover:bg-teal-50 hover:text-teal-700 transition"
+                  className={`p-2.5 rounded-lg text-xs font-medium transition ${
+                    pathname === s.href ? "bg-teal-100 text-teal-900 font-bold" : "text-slate-700 hover:bg-teal-50 hover:text-teal-700"
+                  }`}
                 >
                   {s.name}
                 </Link>
@@ -129,8 +133,8 @@ export function SiteHeader() {
           })}
         </nav>
 
-        {/* Right Call Button + Hamburger */}
-        <div className="flex items-center gap-2">
+        {/* Right Actions */}
+        <div className="flex items-center gap-2.5">
           <a
             href="tel:+447411523527"
             className="bg-teal-600 hover:bg-teal-700 text-white font-bold px-4 py-2 sm:px-6 sm:py-2.5 rounded-lg shadow-md transition-all hover:scale-105 active:scale-95 flex items-center gap-2 text-xs sm:text-sm"
@@ -138,95 +142,129 @@ export function SiteHeader() {
             <Phone className="w-4 h-4" /> Call Now
           </a>
 
+          {/* Hamburger Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle Menu"
-            className="lg:hidden p-2 rounded-lg text-slate-800 hover:bg-slate-100 transition"
+            className="lg:hidden p-2.5 rounded-xl border border-slate-200 text-slate-800 hover:bg-slate-100 transition"
           >
             {mobileMenuOpen ? <X className="w-6 h-6 text-teal-600" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </div>
 
-      {/* 3. Mobile Menu Drawer */}
+      {/* 3. PREMIUM MOBILE DRAWER (Clean App-Like Design) */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-white border-b border-slate-200 shadow-xl px-5 py-6 space-y-3">
+        <div className="lg:hidden bg-slate-50 border-b border-slate-200 shadow-2xl px-4 py-5 space-y-2 max-h-[80vh] overflow-y-auto pb-24">
+          
+          {/* Home */}
           <Link
             href="/"
             onClick={() => setMobileMenuOpen(false)}
-            className="block font-bold text-slate-800 hover:text-teal-600 py-2 border-b border-slate-100"
+            className={`flex items-center justify-between px-4 py-3 rounded-xl font-bold text-sm transition-all ${
+              pathname === "/"
+                ? "!bg-teal-600 text-white shadow-md shadow-teal-600/30"
+                : "bg-white text-slate-800 border border-slate-200 hover:bg-slate-100"
+            }`}
           >
-            Home
+            <span>Home</span>
+            <ArrowRight className="w-4 h-4 opacity-70" />
           </Link>
 
+          {/* About Us */}
           <Link
             href="/about"
             onClick={() => setMobileMenuOpen(false)}
-            className="block font-bold text-slate-800 hover:text-teal-600 py-2 border-b border-slate-100"
+            className={`flex items-center justify-between px-4 py-3 rounded-xl font-bold text-sm transition-all ${
+              pathname === "/about"
+                ? "!bg-teal-600 text-white shadow-md shadow-teal-600/30"
+                : "bg-white text-slate-800 border border-slate-200 hover:bg-slate-100"
+            }`}
           >
-            About Us
+            <span>About Us</span>
+            <ArrowRight className="w-4 h-4 opacity-70" />
           </Link>
 
-          <div className="py-2 border-b border-slate-100">
+          {/* Services Accordion Card */}
+          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs">
             <button
               onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
-              className="flex justify-between items-center w-full font-bold text-slate-800 hover:text-teal-600"
+              className={`flex justify-between items-center w-full px-4 py-3 font-bold text-sm transition-all ${
+                isServicesActive ? "bg-teal-50 text-teal-800" : "text-slate-800 hover:bg-slate-50"
+              }`}
             >
-              <span>Our Services (10)</span>
-              <ChevronDown className={`w-4 h-4 transition-transform ${mobileServicesOpen ? "rotate-180 text-teal-600" : ""}`} />
+              <span className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-teal-600" /> Our Services (10)
+              </span>
+              <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${mobileServicesOpen ? "rotate-180 text-teal-600" : "text-slate-400"}`} />
             </button>
 
             {mobileServicesOpen && (
-              <div className="pl-3 mt-2 space-y-2">
-                {services.map((s) => (
-                  <Link
-                    key={s.name}
-                    href={s.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="block text-xs font-medium text-slate-600 hover:text-teal-600 py-1"
-                  >
-                    • {s.name}
-                  </Link>
-                ))}
+              <div className="bg-slate-50 border-t border-slate-100 p-2 space-y-1">
+                {services.map((s) => {
+                  const isCurrent = pathname === s.href;
+                  return (
+                    <Link
+                      key={s.name}
+                      href={s.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-semibold transition ${
+                        isCurrent
+                          ? "bg-teal-600 text-white shadow-xs"
+                          : "text-slate-700 hover:bg-white hover:text-teal-600"
+                      }`}
+                    >
+                      <span>• {s.name}</span>
+                      {isCurrent && <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">Active</span>}
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </div>
 
+          {/* Our Events */}
           <Link
             href="/events"
             onClick={() => setMobileMenuOpen(false)}
-            className="block font-bold text-slate-800 hover:text-teal-600 py-2 border-b border-slate-100"
+            className={`flex items-center justify-between px-4 py-3 rounded-xl font-bold text-sm transition-all ${
+              pathname === "/events"
+                ? "!bg-teal-600 text-white shadow-md shadow-teal-600/30"
+                : "bg-white text-slate-800 border border-slate-200 hover:bg-slate-100"
+            }`}
           >
-            Our Events
+            <span>Our Events</span>
+            <ArrowRight className="w-4 h-4 opacity-70" />
           </Link>
 
-          {/* External Threat & Guidance link on Mobile */}
-          <a
-            href="https://www.mi5.gov.uk/threats-and-advice/terrorism-threat-levels"
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => setMobileMenuOpen(false)}
-            className="flex items-center justify-between font-bold text-amber-600 hover:text-amber-700 py-2 border-b border-slate-100"
-          >
-            <span>Threat &amp; Guidance (MI5)</span>
-            <ExternalLink className="w-4 h-4" />
-          </a>
-
+          {/* Contact */}
           <Link
             href="/contact"
             onClick={() => setMobileMenuOpen(false)}
-            className="block font-bold text-slate-800 hover:text-teal-600 py-2 border-b border-slate-100"
+            className={`flex items-center justify-between px-4 py-3 rounded-xl font-bold text-sm transition-all ${
+              pathname === "/contact"
+                ? "!bg-teal-600 text-white shadow-md shadow-teal-600/30"
+                : "bg-white text-slate-800 border border-slate-200 hover:bg-slate-100"
+            }`}
           >
-            Contact
+            <span>Contact</span>
+            <ArrowRight className="w-4 h-4 opacity-70" />
           </Link>
 
+          {/* Career */}
           <Link
             href="/careers"
             onClick={() => setMobileMenuOpen(false)}
-            className="block font-bold text-slate-800 hover:text-teal-600 py-2"
+            className={`flex items-center justify-between px-4 py-3 rounded-xl font-bold text-sm transition-all ${
+              pathname === "/careers"
+                ? "!bg-teal-600 text-white shadow-md shadow-teal-600/30"
+                : "bg-white text-slate-800 border border-slate-200 hover:bg-slate-100"
+            }`}
           >
-            Career
+            <span>Career (We're Hiring)</span>
+            <ArrowRight className="w-4 h-4 opacity-70" />
           </Link>
+
         </div>
       )}
     </header>
